@@ -1,15 +1,19 @@
-﻿using RIT.AI.Flocking;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class SeekTargetStrategy : AbstractSeekStrategy
+﻿namespace RIT.AI.Flocking
 {
-    readonly ITarget _seekTarget;
-    protected override Vector3 TargetPosition => _seekTarget.Position;
-
-    public SeekTargetStrategy(IBoid host, float weight, ITarget target) : base (host, weight)
+    using UnityEngine;
+    public class SeekTargetStrategy : AbstractSeekStrategy
     {
-        _seekTarget = target;
+        public override Vector3 SeekTargetPosition => SeekTarget.Position;
+
+        public ITarget SeekTarget { get; }
+
+        public SeekTargetStrategy(
+            IBoid host, 
+            float weight, 
+            ITarget target) 
+            :base (host, weight)
+        {
+            SeekTarget = target;
+        }
     }
 }

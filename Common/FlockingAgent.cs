@@ -8,7 +8,6 @@ namespace RIT.AI.Flocking
         [SerializeField] protected Transform _transform;
 
         readonly HashSet<FlockingStrategy> _flockings = new HashSet<FlockingStrategy>();
-        float _sumOfFlockingWeights = 1;
 
         public abstract float MaxSpeed      { get; }
         public abstract float SlowingRadius { get; }
@@ -28,7 +27,6 @@ namespace RIT.AI.Flocking
             if (strategy != null)
             {
                 _flockings.Add(strategy);
-                _sumOfFlockingWeights += strategy.Weight;
             }
         }
 
@@ -38,30 +36,20 @@ namespace RIT.AI.Flocking
         {
             if (Mass > 0)
             {
-                Velocity += GetAveragedSteering() / Mass;
+                Velocity += ResultingSteering() / Mass;
             }
             Velocity = Vector3.ClampMagnitude(Velocity, MaxSpeed);
             Position += Velocity * Time.deltaTime;
         }
-
-        protected virtual Vector3 GetAveragedSteering()
-        {
-            Vector3 resultingSteering = Vector3.zero;
-            if (_sumOfFlockingWeights > 0)
-            {
-                resultingSteering = SteeringsSum() / _sumOfFlockingWeights;
-            }
-            return resultingSteering;
-        }
-
-        protected virtual Vector3 SteeringsSum()
+        
+        protected virtual Vector3 ResultingSteering()
         {
             Vector3 sum = Vector3.zero;
             foreach (var flocking in _flockings)
             {
-                sum += flocking.Steering;
+                sum += flocking.Steering * flocking.Weight;
             }
-            return sum;
+            return sum / _flockings.Count;
         }
     }
 }

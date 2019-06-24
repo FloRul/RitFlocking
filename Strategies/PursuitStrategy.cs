@@ -1,23 +1,26 @@
-﻿
-namespace RIT.AI.Flocking
+﻿namespace RIT.AI.Flocking
 {
     using UnityEngine;
     public class PursuitStrategy : AbstractSeekStrategy
     {
-        readonly IBoid _target;
+        public override Vector3 SeekTargetPosition => FuturePosition();
 
-        public PursuitStrategy(IBoid host, float weight, IBoid target) : base(host, weight)
+        public IBoid PursuitTarget { get; }
+
+        public PursuitStrategy(
+            IBoid host, 
+            float weight, 
+            IBoid target) 
+            :base(host, weight)
         {
-            _target = target;
+            PursuitTarget = target;
         }
-
-        protected override Vector3 TargetPosition => FuturePosition();
 
         virtual protected Vector3 FuturePosition()
         {
-            var distance = (_target.Position - Host.Position).magnitude;
+            var distance = (PursuitTarget.Position - Host.Position).magnitude;
             var updateAhead = distance / Host.MaxSpeed;
-            Vector3 futurePosition = _target.Position + _target.Velocity * updateAhead;
+            Vector3 futurePosition = PursuitTarget.Position + PursuitTarget.Velocity * updateAhead;
             return futurePosition;
         }
     } 
