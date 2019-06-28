@@ -3,6 +3,8 @@
     using UnityEngine;
     public abstract class AbstractFleeStrategy : FlockingStrategy
     {
+        public sealed override Vector3 Steering => FleePosition(FleeTargetPosition);
+
         public abstract Vector3 FleeTargetPosition { get; }
 
         public float ProximityTreshold { get; }
@@ -15,8 +17,6 @@
         {
             ProximityTreshold = proximityTreshold;
         }
-
-        public sealed override Vector3 Steering => FleePosition(FleeTargetPosition);
 
         protected virtual Vector3 FleePosition(Vector3 target)
         {

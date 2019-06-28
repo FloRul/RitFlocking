@@ -12,8 +12,9 @@
             float weight, 
             ITarget target) 
             :base (host, weight)
-        {
+        { 
             SeekTarget = target;
         }
     }
 }
+ 

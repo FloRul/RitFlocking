@@ -9,5 +9,10 @@
         {
             Position = position;
         }
+
+        public Target()
+        {
+            Position = default;
+        }
     }
 }
