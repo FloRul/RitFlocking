@@ -5,9 +5,9 @@
     public class LeaderFollowing : FlockingStrategy
     {
         public override Vector3 Steering => ComputedStrategy();
- 
 
-        List<IBoid> _neighbors { get; }
+
+        IBoid[] _neighbors;
         LeaderTail _leaderTail;
         float _separationRadius { get; }
 
@@ -20,17 +20,17 @@
             float weight,
             IBoid leader,
             float maxDistancefromLead,
-            List<IBoid> neighbors,
+            IBoid[] neighbors,
             float separationRadius = .1f) 
             :base(host, weight)
         {
             _neighbors = neighbors;
 
             _leaderTail = new LeaderTail(leader, maxDistancefromLead); 
-            _arriveToleader = new SeekTargetStrategy(host, weight, _leaderTail);
 
+            _arriveToleader = new SeekTargetStrategy(host, weight, _leaderTail);
+            _neighborsSeparation = new SeparateStrategy(host, 1, neighbors, separationRadius);
             _evadeLeaderPath = new NullStrategy(host);
-            _neighborsSeparation = new NullStrategy(host);
         }
 
         protected virtual Vector3 ComputedStrategy()
