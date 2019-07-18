@@ -1,42 +1,43 @@
 ﻿namespace RIT.AI.Flocking
 {
     using System.Collections.Generic;
+    using System.Linq;
     using UnityEngine;
     public class SeparateStrategy : FlockingStrategy
     {
         IBoid[] _neighbors;
-        float _separationRadius;
+        float _sqrSeparationRadius;
+        float _separationIntensity;
 
-        public SeparateStrategy(IBoid host, float weight, IBoid[] neighbors, float separationRadius) : base(host, weight)
+        public SeparateStrategy(
+            IBoid host,
+            float weight,
+            IBoid[] neighbors,
+            float sqrSeparationRadius,
+            float separationIntensity) 
+            : base(host, weight)
         {
             _neighbors = neighbors;
-            _separationRadius = separationRadius;
+            _sqrSeparationRadius = sqrSeparationRadius;
+            _separationIntensity = separationIntensity;
         }
 
         public override Vector3 Steering => Separate();
 
         Vector3 Separate()
         {
-            Vector3 force = new Vector3();
-            int nearestNeighbors = 0;
-
-            foreach (var boid in _neighbors)
+            Vector3 force = Vector3.zero;
+            foreach (var neighborPosition in _neighbors.Select(n=>n.Position))
             {
-                if ((boid.Position - Host.Position).sqrMagnitude 
-                    < Mathf.Pow(_separationRadius, 2))
+                if ((neighborPosition - Host.Position).sqrMagnitude
+                    < Mathf.Pow(_sqrSeparationRadius, 2))
                 {
-                    ++nearestNeighbors;
-                    force += Host.Position - boid.Position;
+                    force += Host.Position - neighborPosition;
                 }
             }
+            (force /= _neighbors.Count() > 0 ? _neighbors.Count() : 1).Normalize();
 
-            if (nearestNeighbors >= 1)
-            {
-                force /= nearestNeighbors;
-            }
-            force.Normalize();
-            // TODO magic number
-            return force * 8;
+            return force * _separationIntensity;
         }
     }
 

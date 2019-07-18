@@ -29,7 +29,7 @@
             _leaderTail = new LeaderTail(leader, maxDistancefromLead); 
 
             _arriveToleader = new SeekTargetStrategy(host, weight, _leaderTail);
-            _neighborsSeparation = new SeparateStrategy(host, 1, neighbors, separationRadius);
+            _neighborsSeparation = new SeparateStrategy(host, 1, neighbors, separationRadius, 20);
             _evadeLeaderPath = new NullStrategy(host);
         }
 
