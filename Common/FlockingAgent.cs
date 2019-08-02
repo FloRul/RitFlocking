@@ -29,17 +29,12 @@ namespace RIT.AI.Flocking
                 _flockings.Add(strategy);
             }
         }
-
-        protected virtual void Update() => UpdateSteering();
-
-        protected virtual void UpdateSteering()
+        
+        public virtual void UpdateSteering()
         {
             if (_flockings.Count > 0)
             {
-                if (Mass > 0)
-                {
-                    Velocity += ResultingSteering() / Mass;
-                }
+                Velocity += Mass > 0 ? ResultingSteering() / Mass : Vector3.zero;
                 Velocity = Vector3.ClampMagnitude(Velocity, MaxSpeed);
                 Position += Velocity * Time.deltaTime;
             }
@@ -48,13 +43,15 @@ namespace RIT.AI.Flocking
         protected virtual Vector3 ResultingSteering()
         {
             Vector3 sum = Vector3.zero;
+            float totalWeight = 0;
             if (_flockings.Count > 0)
             {
                 foreach (var flocking in _flockings)
                 {
                     sum += flocking.Steering * flocking.Weight;
+                    totalWeight += flocking.Weight;
                 }
-                sum /= _flockings.Count;
+                sum /= totalWeight;
             }
             return sum;
         }

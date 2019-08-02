@@ -1,44 +1,42 @@
 ﻿namespace RIT.AI.Flocking
 {
     using System.Collections.Generic;
-    using System.Linq;
     using UnityEngine;
     public class SeparateStrategy : FlockingStrategy
     {
-        IBoid[] _neighbors;
         float _sqrSeparationRadius;
         float _separationIntensity;
+        NeighborQuerier _neighborQuerier;
+        List<Vector3> _neighborsPosition = new List<Vector3>();
 
         public SeparateStrategy(
             IBoid host,
             float weight,
-            IBoid[] neighbors,
             float sqrSeparationRadius,
-            float separationIntensity) 
+            float separationIntensity,
+            NeighborQuerier neighborQuerier) 
             : base(host, weight)
         {
-            _neighbors = neighbors;
             _sqrSeparationRadius = sqrSeparationRadius;
             _separationIntensity = separationIntensity;
+            _neighborQuerier = neighborQuerier;
         }
 
-        public override Vector3 Steering => Separate();
+        public override Vector3 Steering => SeparateFromNeighbors();
 
-        Vector3 Separate()
+        Vector3 SeparateFromNeighbors()
         {
             Vector3 force = Vector3.zero;
-            foreach (var neighborPosition in _neighbors.Select(n=>n.Position))
+            _neighborQuerier.GetNeighbors(Host.Position, _sqrSeparationRadius, ref _neighborsPosition);
+            if (_neighborsPosition.Count > 0)
             {
-                if ((neighborPosition - Host.Position).sqrMagnitude
-                    < Mathf.Pow(_sqrSeparationRadius, 2))
+                foreach (Vector3 v in _neighborsPosition)
                 {
-                    force += Host.Position - neighborPosition;
+                    force += Host.Position - v;
                 }
+                (force /= _neighborsPosition.Count).Normalize();
             }
-            (force /= _neighbors.Count() > 0 ? _neighbors.Count() : 1).Normalize();
-
             return force * _separationIntensity;
         }
     }
-
 }

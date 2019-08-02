@@ -1,46 +1,32 @@
 ﻿namespace RIT.AI.Flocking
 {
     using UnityEngine;
-    using System.Collections.Generic;
     public class LeaderFollowing : FlockingStrategy
     {
-        public override Vector3 Steering => ComputedStrategy();
-
-
-        IBoid[] _neighbors;
-        LeaderTail _leaderTail;
-        float _separationRadius { get; }
+        public override Vector3 Steering => (_arriveToleader.Steering + _neighborsSeparation.Steering) / 2;
+        
+        readonly LeaderTail _leaderTail;
+        readonly float _separationRadius;
 
         protected FlockingStrategy _arriveToleader;
-        protected FlockingStrategy _evadeLeaderPath;
         protected FlockingStrategy _neighborsSeparation;
 
         public LeaderFollowing(
             IBoid host,
-            float weight,
+            float followTailweight,
             IBoid leader,
             float maxDistancefromLead,
-            IBoid[] neighbors,
-            float separationRadius = .1f) 
-            :base(host, weight)
+            float separateWeight,
+            NeighborQuerier neighborQuerier,
+            float separationRadius) 
+            :base(host, 1 )
         {
-            _neighbors = neighbors;
-
             _leaderTail = new LeaderTail(leader, maxDistancefromLead); 
-
-            _arriveToleader = new SeekTargetStrategy(host, weight, _leaderTail);
-            _neighborsSeparation = new SeparateStrategy(host, 1, neighbors, separationRadius, 20);
-            _evadeLeaderPath = new NullStrategy(host);
+            _arriveToleader = new SeekTargetStrategy(host, followTailweight, _leaderTail);
+            _neighborsSeparation = new SeparateStrategy(host, separateWeight, separationRadius, 5, neighborQuerier);
         }
 
-        protected virtual Vector3 ComputedStrategy()
-        {
-            return ( _arriveToleader.Steering + 
-                     _evadeLeaderPath.Steering + 
-                     _neighborsSeparation.Steering ) / 3;
-        }
-        
-        private class LeaderTail : ITarget
+        class LeaderTail : ITarget
         {
             IBoid _leader;
             float _maxDistanceFromLead;
