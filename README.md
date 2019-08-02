@@ -76,5 +76,7 @@ The WanderStrategy is the class encapsulating the steering calculation it requir
     - The turn chance of the agent for each frame
     - The radius of the circle distance 
     - The distance of the circle from the agent
- For a better understanding of these 2 last parameters I recommand to consult [this article](https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-wander--gamedev-1624) explaining the principles behind the wander parameters
+ For a better understanding of these 2 last parameters I recommand to consult [this article](https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-wander--gamedev-1624) explaining the principles behind the wander parameters.
+ 
+ The way I designed this library made me realize it was making making more and more sense to upgrade and optimizing it using the Unity DOTS system.
   
